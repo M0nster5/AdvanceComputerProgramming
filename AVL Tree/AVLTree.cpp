@@ -41,12 +41,12 @@ node* rotaterLeft(node* q){
 node* balance(node* p){
 	fixHeight(p);
 	if (balanceFactor(p)==2){
-		if balanceFactor(p->right < 0){
+		if (balanceFactor(p->right) < 0){
 			p->right = rotaterRight(p->right);
 		}
 		return rotaterLeft(p);
 	}
-	if balanceFactor(p==-2){
+	if (balanceFactor(p)==-2){
 		if(balanceFactor(p->left)>0){
 			p->left = rotaterLeft(p->left);
 		}
@@ -62,6 +62,38 @@ node* insert(node* p, int k){
 	else
 		p->right = insert(p->right,k);
 	return balance(p);
+}
+
+node* findmin(node* p)
+{
+    return p->left?findmin(p->left):p;
+}
+
+node* removeMin(node* p){
+	if(p->left==0)
+		return p->right;
+	p->left = removeMin(p->left);
+	return balance(p);
+}
+
+node* remove(node* p,int k){
+	if(!p) return 0;
+	if (k<p->key)
+		p->left = remove(p->left,k);
+	else if(k > p-> key)
+		p->right = remove(p->right, k);
+	else 
+    {
+        node* q = p->left;
+        node* r = p->right;
+        delete p;
+        if( !r ) return q;
+        node* min = findmin(r);
+        min->right = removeMin(r);
+        min->left = q;
+        return balance(min);
+    }
+    return balance(p);
 }
 
 
